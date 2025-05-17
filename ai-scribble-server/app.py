@@ -1,0 +1,129 @@
+from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
+import os
+import base64
+from io import BytesIO
+from PIL import Image
+from openai import OpenAI
+
+# Init Flask + CORS
+app = Flask(__name__)
+CORS(app, supports_credentials=True)
+client = OpenAI()
+
+
+game_state = {"started": False}
+
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# In-memory storage
+players = []
+generated_images = []
+
+# Serve uploaded images
+@app.route("/uploads/<path:filename>")
+def serve_file(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
+
+
+# Join endpoint
+@app.route("/join", methods=["POST"])
+def join():
+    data = request.get_json()
+    name = data.get("name")
+
+    if name and name not in players:
+        players.append(name)
+
+    return jsonify({"players": players})
+
+
+# Get all players
+@app.route("/players", methods=["GET"])
+def get_players():
+    return jsonify({"players": players})
+
+
+# Get all generated images
+@app.route("/images", methods=["GET"])
+def get_images():
+    return jsonify({"images": generated_images})
+
+@app.route("/game-state", methods=["GET"])
+def get_game_state():
+    return jsonify(game_state)
+
+@app.route("/start-game", methods=["POST"])
+def start_game():
+    game_state["started"] = True
+    return jsonify({"status": "started"})
+
+# Submit drawing and return AI-generated image
+@app.route("/submit-drawing", methods=["POST"])
+def submit_drawing():
+    data = request.get_json()
+    player = data.get("player")
+    word = data.get("word")
+    image_b64 = data.get("imageData")
+
+    if not player or not image_b64:
+        return jsonify({"status": "error", "message": "Missing data"}), 400
+
+    try:
+        # Decode base64 image
+        if image_b64.startswith("data:image"):
+            image_b64 = image_b64.split(",")[1]
+
+        image_data = base64.b64decode(image_b64)
+        sketch = Image.open(BytesIO(image_data))
+
+        # Fill transparent background with white
+        if sketch.mode in ("RGBA", "LA"):
+            background = Image.new("RGB", sketch.size, (255, 255, 255))
+            background.paste(sketch, mask=sketch.split()[3])
+            sketch = background
+
+        # Save the original sketch
+        filename = f"{player}_{word}.png"
+        filepath = os.path.join(UPLOAD_FOLDER, filename)
+        sketch.save(filepath)
+
+        # Generate realistic image with OpenAI
+        with open(filepath, "rb") as f:
+            result = client.images.edit(
+                model="gpt-image-1",
+                image=[f],
+                prompt=f"Make the above image realistic, based on the drawing."
+            )
+
+        image_base64 = result.data[0].b64_json
+        image_bytes = base64.b64decode(image_base64)
+
+        gen_filename = f"{player}_{word}_real.png"
+        gen_filepath = os.path.join(UPLOAD_FOLDER, gen_filename)
+        with open(gen_filepath, "wb") as out:
+            out.write(image_bytes)
+
+        image_url = f"http://localhost:5050/uploads/{gen_filename}"
+
+        # Add to image list for polling
+        generated_images.append({
+            "player": player,
+            "word": word,
+            "image_url": image_url
+        })
+
+        return jsonify({
+            "status": "success",
+            "filename": gen_filename,
+            "image_url": image_url
+        })
+
+    except Exception as e:
+        print("❌ Error processing image:", e)
+        return jsonify({"status": "error", "message": str(e)}), 500
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5050, debug=True)
