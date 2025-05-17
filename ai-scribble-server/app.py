@@ -11,6 +11,11 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True)
 client = OpenAI()
 
+guesses = {}  # player_name -> guess
+current_round = {
+    "index": 0,
+    "started": False
+}
 
 game_state = {"started": False}
 
@@ -124,6 +129,35 @@ def submit_drawing():
         print("❌ Error processing image:", e)
         return jsonify({"status": "error", "message": str(e)}), 500
 
+@app.route("/submit-guess", methods=["POST"])
+def submit_guess():
+    data = request.get_json()
+    player = data.get("player")
+    guess = data.get("guess")
+
+    if player and guess:
+        guesses[player] = guess
+        return jsonify({"status": "ok"})
+    return jsonify({"status": "error"}), 400
+
+@app.route("/next-image", methods=["GET"])
+def next_image():
+    if current_round["index"] < len(generated_images):
+        img = generated_images[current_round["index"]]
+        return jsonify(img)
+    return jsonify({"done": True})
+
+@app.route("/advance-round", methods=["POST"])
+def advance_round():
+    current_round["index"] += 1
+    guesses.clear()
+    if current_round["index"] >= len(generated_images):
+        current_round["started"] = False
+    return jsonify({"status": "advanced"})
+
+@app.route("/guesses", methods=["GET"])
+def get_guesses():
+    return jsonify(guesses)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5050, debug=True)

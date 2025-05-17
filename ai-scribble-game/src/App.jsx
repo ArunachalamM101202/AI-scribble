@@ -3,15 +3,35 @@
 // import Lobby from "./components/Lobby";
 // import WaitingRoom from "./components/WaitingRoom";
 // import DrawCanvas from "./components/DrawCanvas";
+// import GameLoop from "./components/GameLoop";
 
 // function App() {
-//   const { gameStarted, playerName } = useGame();
+//   const { gameStarted, setGameStarted, playerName } = useGame();
 
 //   const [drawingSubmitted, setDrawingSubmitted] = useState(false);
 //   const [generatedImageURL, setGeneratedImageURL] = useState(null);
 //   const [submissionError, setSubmissionError] = useState(null);
 
-//   // 🔁 Poll every 5 seconds to check if AI image is ready
+//   // 🔁 Poll for global game state if game hasn't started yet
+//   useEffect(() => {
+//     if (gameStarted || !playerName) return;
+
+//     const interval = setInterval(async () => {
+//       try {
+//         const res = await fetch("http://localhost:5050/game-state");
+//         const data = await res.json();
+//         if (data.started) {
+//           setGameStarted(true);
+//         }
+//       } catch (err) {
+//         console.error("Error polling game state:", err);
+//       }
+//     }, 3000);
+
+//     return () => clearInterval(interval);
+//   }, [gameStarted, playerName, setGameStarted]);
+
+//   // 🔁 Poll for AI-generated image once drawing is submitted
 //   useEffect(() => {
 //     if (!drawingSubmitted || !playerName) return;
 
@@ -54,14 +74,14 @@
 //         throw new Error(result.message);
 //       }
 
-//       setDrawingSubmitted(true); // Polling will now begin
+//       setDrawingSubmitted(true);
 //     } catch (error) {
 //       console.error("Failed to submit drawing:", error);
 //       setSubmissionError("Failed to submit drawing. Please try again.");
 //     }
 //   };
 
-//   // 👥 Show lobby if game hasn't started
+//   // 👥 Lobby before game starts
 //   if (!gameStarted) return <Lobby />;
 
 //   // 🎨 Drawing phase
@@ -76,7 +96,7 @@
 //     );
 //   }
 
-//   // 🖼️ Display AI-generated image when ready
+//   // 🖼️ Display generated image when available
 //   if (generatedImageURL) {
 //     return (
 //       <div style={{ textAlign: "center", paddingTop: "40px" }}>
@@ -94,12 +114,12 @@
 //         <p>
 //           <em>Can you guess what the original drawing was?</em>
 //         </p>
-//         {/* Optional: Add guessing input here */}
+//         {/* TODO: Add guessing input here */}
 //       </div>
 //     );
 //   }
 
-//   // ⌛ Waiting for image
+//   // ⌛ Waiting while image is being generated
 //   return (
 //     <div style={{ textAlign: "center", marginTop: "40px" }}>
 //       <h3>⏳ Generating your AI image...</h3>
@@ -116,6 +136,7 @@ import { useGame } from "./components/GameContext";
 import Lobby from "./components/Lobby";
 import WaitingRoom from "./components/WaitingRoom";
 import DrawCanvas from "./components/DrawCanvas";
+import GameLoop from "./components/GameLoop";
 
 function App() {
   const { gameStarted, setGameStarted, playerName } = useGame();
@@ -123,8 +144,9 @@ function App() {
   const [drawingSubmitted, setDrawingSubmitted] = useState(false);
   const [generatedImageURL, setGeneratedImageURL] = useState(null);
   const [submissionError, setSubmissionError] = useState(null);
+  const [gameLoopStarted, setGameLoopStarted] = useState(false);
 
-  // 🔁 Poll for global game state if game hasn't started yet
+  // 🔁 Poll global game state
   useEffect(() => {
     if (gameStarted || !playerName) return;
 
@@ -143,29 +165,28 @@ function App() {
     return () => clearInterval(interval);
   }, [gameStarted, playerName, setGameStarted]);
 
-  // 🔁 Poll for AI-generated image once drawing is submitted
+  // 🔁 Poll for AI image
   useEffect(() => {
-    if (!drawingSubmitted || !playerName) return;
+    if (!drawingSubmitted || !playerName || generatedImageURL) return;
 
     const interval = setInterval(async () => {
       try {
         const res = await fetch("http://localhost:5050/images");
         const data = await res.json();
-
         const image = data.images.find(img => img.player === playerName);
         if (image) {
           setGeneratedImageURL(image.image_url);
-          clearInterval(interval); // Stop polling once found
+          clearInterval(interval);
         }
       } catch (err) {
         console.error("Error fetching images:", err);
       }
-    }, 5000);
+    }, 3000);
 
     return () => clearInterval(interval);
-  }, [drawingSubmitted, playerName]);
+  }, [drawingSubmitted, playerName, generatedImageURL]);
 
-  // 🎯 Submit drawing to Flask backend
+  // 📤 Submit drawing to backend
   const handleDrawingSubmit = async (data) => {
     try {
       const response = await fetch("http://localhost:5050/submit-drawing", {
@@ -193,7 +214,7 @@ function App() {
     }
   };
 
-  // 👥 Lobby before game starts
+  // 👥 Lobby phase
   if (!gameStarted) return <Lobby />;
 
   // 🎨 Drawing phase
@@ -208,8 +229,8 @@ function App() {
     );
   }
 
-  // 🖼️ Display generated image when available
-  if (generatedImageURL) {
+  // 🖼️ Display AI image before round begins
+  if (generatedImageURL && !gameLoopStarted) {
     return (
       <div style={{ textAlign: "center", paddingTop: "40px" }}>
         <h2>🎨 AI Generated Image</h2>
@@ -223,15 +244,29 @@ function App() {
             margin: "20px 0",
           }}
         />
-        <p>
-          <em>Can you guess what the original drawing was?</em>
-        </p>
-        {/* TODO: Add guessing input here */}
+        <p><em>Waiting for other players to finish...</em></p>
+        <button onClick={() => setGameLoopStarted(true)} style={{ marginTop: "20px" }}>
+          ▶️ Start Guessing Rounds
+        </button>
       </div>
     );
   }
 
-  // ⌛ Waiting while image is being generated
+  // 🧠 GameLoop phase
+  if (gameLoopStarted) {
+    return (
+      <GameLoop
+        onComplete={() => {
+          setGameStarted(false);
+          setDrawingSubmitted(false);
+          setGeneratedImageURL(null);
+          setGameLoopStarted(false);
+        }}
+      />
+    );
+  }
+
+  // ⌛ Fallback while AI image is generating
   return (
     <div style={{ textAlign: "center", marginTop: "40px" }}>
       <h3>⏳ Generating your AI image...</h3>
