@@ -129,16 +129,33 @@ def submit_drawing():
         print("❌ Error processing image:", e)
         return jsonify({"status": "error", "message": str(e)}), 500
 
+
+guesses_by_image = []  # list of { image_index: int, guesses: { player: guess } }
+
 @app.route("/submit-guess", methods=["POST"])
 def submit_guess():
     data = request.get_json()
     player = data.get("player")
     guess = data.get("guess")
+    image_index = data.get("image_index")
 
-    if player and guess:
-        guesses[player] = guess
-        return jsonify({"status": "ok"})
-    return jsonify({"status": "error"}), 400
+    # Expand storage if needed
+    while len(guesses_by_image) <= image_index:
+        guesses_by_image.append({"guesses": {}})
+
+    guesses_by_image[image_index]["guesses"][player] = guess
+    return jsonify({"status": "ok"})
+
+# @app.route("/submit-guess", methods=["POST"])
+# def submit_guess():
+#     data = request.get_json()
+#     player = data.get("player")
+#     guess = data.get("guess")
+
+#     if player and guess:
+#         guesses[player] = guess
+#         return jsonify({"status": "ok"})
+#     return jsonify({"status": "error"}), 400
 
 @app.route("/next-image", methods=["GET"])
 def next_image():
@@ -146,6 +163,12 @@ def next_image():
         img = generated_images[current_round["index"]]
         return jsonify(img)
     return jsonify({"done": True})
+
+@app.route("/guesses/<int:index>", methods=["GET"])
+def get_guesses_for_image(index):
+    if index < len(guesses_by_image):
+        return jsonify(guesses_by_image[index]["guesses"])
+    return jsonify({})
 
 @app.route("/advance-round", methods=["POST"])
 def advance_round():
