@@ -9,7 +9,7 @@ export default function GameSummary({ onRestart }) {
   useEffect(() => {
     const fetchScores = async () => {
       try {
-        const res = await fetch("http://192.168.11.161:5050/scores");
+        const res = await fetch("http://localhost/scores");
         const data = await res.json();
         setScores(data);
 
