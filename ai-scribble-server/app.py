@@ -9,7 +9,7 @@ from openai import OpenAI
 # Init Flask + CORS
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
-client = OpenAI(api_key="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")
+client = OpenAI()
 
 
 import random
