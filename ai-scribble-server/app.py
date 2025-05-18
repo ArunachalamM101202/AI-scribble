@@ -11,6 +11,25 @@ app = Flask(__name__)
 CORS(app, supports_credentials=True)
 client = OpenAI()
 
+
+import random
+
+word_pool = [
+    "Penguin DJ",
+    "Toaster Rocket",
+    "Dancing Banana",
+    "Flying Toilet",
+    "Unicorn Pizza",
+    "Skateboarding Cat",
+    "Broccoli King",
+    "Octopus Chef",
+    "Cactus in Sunglasses",
+    "Alien Playing Golf"
+]
+
+player_words = {}  # player -> assigned word
+
+
 guesses = {}  # player_name -> guess
 
 current_round = {
@@ -101,7 +120,7 @@ def submit_drawing():
             result = client.images.edit(
                 model="gpt-image-1",
                 image=[f],
-                prompt=f"Make the above image realistic, based on the drawing."
+                prompt=f"Make the above hand drawing very realistic and funny by adding a lot of details."
             )
 
         image_base64 = result.data[0].b64_json
@@ -165,6 +184,19 @@ def next_image():
         img = generated_images[current_round["index"]]
         return jsonify(img)
     return jsonify({"done": not current_round["reveal"]})
+
+
+@app.route("/assign-word", methods=["POST"])
+def assign_word():
+    data = request.get_json()
+    player = data.get("player")
+
+    if player:
+        if player not in player_words:
+            player_words[player] = random.choice(word_pool)
+        return jsonify({"word": player_words[player]})
+    return jsonify({"error": "No player provided"}), 400
+
 
 @app.route("/guesses/<int:index>", methods=["GET"])
 def get_guesses_for_image(index):

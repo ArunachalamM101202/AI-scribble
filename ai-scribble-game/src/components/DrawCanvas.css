@@ -1,0 +1,365 @@
+/* DrawCanvas.css - Matching the game's visual theme */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+.draw-canvas-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.draw-canvas-header {
+  text-align: center;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.draw-canvas-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #2b2d42;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.draw-canvas-word {
+  background: linear-gradient(45deg, #4361ee, #4cc9f0);
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  display: inline-block;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-left: 10px;
+  box-shadow: 0 4px 10px rgba(67, 97, 238, 0.25);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.timer-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 500;
+  color: #586069;
+}
+
+.timer-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2b2d42;
+  min-width: 36px;
+  text-align: center;
+}
+
+/* Timer changes color as it counts down */
+.timer-high {
+  color: #2b9348;
+}
+
+.timer-medium {
+  color: #e76f51;
+}
+
+.timer-low {
+  color: #ef4444;
+  animation: timerPulse 1s infinite;
+}
+
+@keyframes timerPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.draw-canvas-timer-bar {
+  width: 100%;
+  height: 6px;
+  background-color: #e9ecef;
+  border-radius: 3px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.draw-canvas-timer-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #ef4444, #e76f51, #2b9348);
+  border-radius: 3px;
+  transition: width 1s linear;
+}
+
+.canvas-wrapper {
+  position: relative;
+  margin-bottom: 20px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* This targets react-canvas-draw elements */
+.canvas-wrapper .react-canvas-draw {
+  background-color: white !important;
+  border-radius: 12px;
+  cursor: crosshair;
+}
+
+.brush-controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.brush-size-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brush-size-label {
+  font-size: 14px;
+  color: #586069;
+}
+
+.brush-size-input {
+  width: 100px;
+  height: 5px;
+  -webkit-appearance: none;
+  background: #e9ecef;
+  border-radius: 5px;
+  outline: none;
+}
+
+.brush-size-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #4361ee;
+  cursor: pointer;
+}
+
+.color-picker {
+  display: flex;
+  gap: 8px;
+}
+
+.color-option {
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.color-option:hover {
+  transform: scale(1.1);
+}
+
+.color-option.selected {
+  border-color: #2b2d42;
+  transform: scale(1.1);
+}
+
+.canvas-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 15px;
+  width: 100%;
+  justify-content: center;
+}
+
+.canvas-button {
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 140px;
+  justify-content: center;
+}
+
+.clear-button {
+  background-color: #f8f9fa;
+  color: #2b2d42;
+  border: 1px solid #dee2e6;
+}
+
+.clear-button:hover:not(:disabled) {
+  background-color: #e9ecef;
+  transform: translateY(-2px);
+}
+
+.submit-drawing-button {
+  background: linear-gradient(45deg, #4361ee, #3a0ca3);
+  color: white;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.submit-drawing-button:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+
+.submit-drawing-button:active:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.canvas-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.submitted-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #10b981;
+  font-weight: 600;
+  font-size: 16px;
+  animation: fadeInSlide 0.5s ease-out;
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.submitted-checkmark {
+  font-size: 20px;
+}
+
+.drawing-tip {
+  margin-top: 15px;
+  padding: 12px 15px;
+  background-color: rgba(67, 97, 238, 0.08);
+  border-left: 3px solid #4361ee;
+  border-radius: 6px;
+  color: #586069;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.drawing-tip strong {
+  color: #2b2d42;
+}
+
+/* Loading animation for the submission */
+.loading-dots {
+  display: inline-flex;
+  align-items: center;
+  height: 24px;
+}
+
+.loading-dots span {
+  width: 8px;
+  height: 8px;
+  margin: 0 4px;
+  background-color: white;
+  border-radius: 50%;
+  display: inline-block;
+  animation: dots 1.4s infinite ease-in-out both;
+}
+
+.loading-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes dots {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+/* Time's up animation */
+@keyframes timeUp {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+    color: #ef4444;
+  }
+}
+
+.time-up {
+  animation: timeUp 0.5s ease-in-out 3;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  .canvas-wrapper .react-canvas-draw {
+    max-width: 100%;
+    height: auto !important;
+  }
+  
+  .draw-canvas-title {
+    font-size: 22px;
+  }
+  
+  .canvas-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .canvas-button {
+    width: 100%;
+  }
+}

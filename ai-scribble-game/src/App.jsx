@@ -84,7 +84,7 @@ function App() {
         credentials: "include",
         body: JSON.stringify({
           player: playerName,
-          word: "Tiger",
+          word: "Pizza",
           imageData: data.imageData,
         }),
       });
@@ -108,7 +108,7 @@ function App() {
   if (!drawingSubmitted) {
     return (
       <>
-        <DrawCanvas wordToDraw="Tiger" onSubmitDrawing={handleDrawingSubmit} />
+        <DrawCanvas wordToDraw="Pizza" onSubmitDrawing={handleDrawingSubmit} />
         {submissionError && (
           <p style={{ color: "red", textAlign: "center" }}>{submissionError}</p>
         )}

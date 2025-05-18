@@ -1,0 +1,241 @@
+/* GuessInput.css - Matching the game's visual theme */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+.guess-input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 25px;
+  max-width: 500px;
+  animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.guess-form {
+  display: flex;
+  width: 100%;
+  gap: 10px;
+  position: relative;
+}
+
+.guess-input {
+  flex-grow: 1;
+  padding: 15px 20px;
+  border: 2px solid #e1e4e8;
+  border-radius: var(--border-radius-md, 12px);
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.3s ease;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.04), 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.guess-input:focus {
+  outline: none;
+  border-color: #4361ee;
+  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.15);
+}
+
+.guess-input:disabled {
+  background-color: #f8f9fa;
+  color: #868e96;
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
+.guess-input::placeholder {
+  color: #adb5bd;
+  font-style: italic;
+}
+
+.submit-button {
+  padding: 15px 25px;
+  background: linear-gradient(45deg, #4361ee, #3a0ca3);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-md, 12px);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.submit-button::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 10%, transparent 10.01%);
+  background-repeat: no-repeat;
+  background-position: 50%;
+  transform: scale(10, 10);
+  opacity: 0;
+  transition: transform 0.4s, opacity 0.8s;
+}
+
+.submit-button:active::after {
+  transform: scale(0, 0);
+  opacity: 0.3;
+  transition: 0s;
+}
+
+.submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 7px 14px rgba(50, 50, 93, 0.15), 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.submit-button:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.submit-button:disabled {
+  background: linear-gradient(45deg, #a0a0a0, #cecece);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.submit-icon {
+  margin-left: 8px;
+  transform: translateX(0);
+  transition: transform 0.3s ease;
+}
+
+.submit-button:hover .submit-icon {
+  transform: translateX(3px);
+}
+
+.result-message {
+  margin-top: 15px;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 15px;
+  animation: fadeInExpand 0.5s ease-out;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@keyframes fadeInExpand {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.result-correct {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.result-incorrect {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.result-icon {
+  font-size: 18px;
+}
+
+.hint-container {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #6c757d;
+  font-style: italic;
+  text-align: center;
+}
+
+.time-remaining {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #4361ee;
+  font-weight: 500;
+}
+
+/* Timer animation */
+.timer-bar {
+  width: 100%;
+  height: 4px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  margin-top: 5px;
+  overflow: hidden;
+  position: relative;
+}
+
+.timer-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #4361ee, #4cc9f0);
+  border-radius: 4px;
+  transition: width 1s linear;
+}
+
+/* Word length hint */
+.word-length-hint {
+  display: flex;
+  gap: 5px;
+  margin-top: 15px;
+  justify-content: center;
+}
+
+.letter-placeholder {
+  width: 20px;
+  height: 4px;
+  background-color: #dee2e6;
+  border-radius: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .guess-form {
+    flex-direction: column;
+  }
+  
+  .guess-input {
+    width: 100%;
+  }
+  
+  .submit-button {
+    width: 100%;
+  }
+}
+
+/* Optional shake animation for incorrect guesses */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake {
+  animation: shake 0.6s cubic-bezier(.36,.07,.19,.97) both;
+}

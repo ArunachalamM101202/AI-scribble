@@ -55,6 +55,17 @@ export default function GameLoop({ onComplete }) {
     }
   }, [imageIndex, imageList]);
 
+  // 🔁 Live poll guesses during 15s guess phase
+// useEffect(() => {
+//   if (!imageData || showReveal) return;
+
+//   const interval = setInterval(() => {
+//     fetchGuesses();
+//   }, 1000); // every 1 sec
+
+//   return () => clearInterval(interval);
+// }, [imageData, showReveal]);
+
   // Step 4: Set timers for guess + reveal
   useEffect(() => {
     if (!imageData) return;
