@@ -19,14 +19,7 @@ ScribblAI turns your chaotic doodles into photorealistic images using advanced A
 - 🏆 Scoring and winner reveal at the end
 - 🌐 Works over LAN or localhost
 
----
-
-## 🧠 Architecture
-
-![Architecture Diagram](./docs/architecture.png)  
-> Two AI image flows: GPT Edit & LLaVA + SD — all roads lead to chaos.
-
----
+----
 
 ## 🛠 Tech Stack
 
