@@ -23,7 +23,7 @@ const [gameEnded, setGameEnded] = useState(false);
 
     const interval = setInterval(async () => {
       try {
-        const res = await fetch("http://192.168.11.161:5050/game-state");
+        const res = await fetch("http://localhost/game-state");
         const data = await res.json();
         if (data.started) {
           setGameStarted(true);
@@ -42,7 +42,7 @@ const [gameEnded, setGameEnded] = useState(false);
 
     const interval = setInterval(async () => {
       try {
-        const res = await fetch("http://192.168.11.161:5050/images");
+        const res = await fetch("http://localhost/images");
         const data = await res.json();
         const image = data.images.find(img => img.player === playerName);
         if (image) {
@@ -63,7 +63,7 @@ const [gameEnded, setGameEnded] = useState(false);
 
     const interval = setInterval(async () => {
       try {
-        const res = await fetch("http://192.168.11.161:5050/all-images-ready");
+        const res = await fetch("http://localhost/all-images-ready");
         const data = await res.json();
         if (data.ready) {
           clearInterval(interval);
@@ -80,7 +80,7 @@ const [gameEnded, setGameEnded] = useState(false);
   // 📤 Submit drawing to backend
   const handleDrawingSubmit = async (data) => {
     try {
-      const response = await fetch("http://192.168.11.161:5050/submit-drawing", {
+      const response = await fetch("http://localhost/submit-drawing", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
