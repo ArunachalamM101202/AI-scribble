@@ -1,8 +1,3 @@
-Absolutely! Here’s a clean, professional, and fun README.md for ScribblAI, complete with setup instructions for both frontend and backend, tech stack, and project highlights.
-
-⸻
-
-
 # 🎮 ScribblAI
 
 > A real-time multiplayer sketch & guess game powered by generative AI.
