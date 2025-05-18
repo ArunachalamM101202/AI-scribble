@@ -4,6 +4,7 @@ import Lobby from "./components/Lobby";
 import WaitingRoom from "./components/WaitingRoom";
 import DrawCanvas from "./components/DrawCanvas";
 import GameLoop from "./components/GameLoop";
+import GameSummary from "./components/GameSummary"; // make sure this import exists
 
 function App() {
   const { gameStarted, setGameStarted, playerName } = useGame();
@@ -12,6 +13,9 @@ function App() {
   const [generatedImageURL, setGeneratedImageURL] = useState(null);
   const [submissionError, setSubmissionError] = useState(null);
   const [gameLoopStarted, setGameLoopStarted] = useState(false);
+const [gameEnded, setGameEnded] = useState(false);
+
+
 
   // 🔁 Poll global game state (host starts game)
   useEffect(() => {
@@ -102,6 +106,7 @@ function App() {
   };
 
   // 👥 Lobby phase
+  if (gameEnded) return <GameSummary onRestart={() => window.location.reload()} />;
   if (!gameStarted) return <Lobby />;
 
   // 🎨 Drawing phase
@@ -145,6 +150,7 @@ function App() {
           setDrawingSubmitted(false);
           setGeneratedImageURL(null);
           setGameLoopStarted(false);
+          setGameEnded(true);
         }}
       />
     );

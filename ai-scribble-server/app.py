@@ -231,5 +231,18 @@ def all_images_ready():
 def get_current_round():
     return jsonify({"index": current_round["index"]})
 
+@app.route("/scores", methods=["GET"])
+def get_scores():
+    scores = {}
+
+    for idx, image in enumerate(generated_images):
+        correct_word = image["word"].strip().lower()
+        if idx < len(guesses_by_image):
+            for player, guess in guesses_by_image[idx]["guesses"].items():
+                if guess.strip().lower() == correct_word:
+                    scores[player] = scores.get(player, 0) + 1
+
+    return jsonify(scores)
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5050, debug=True)
