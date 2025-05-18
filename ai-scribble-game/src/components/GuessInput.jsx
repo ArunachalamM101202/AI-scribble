@@ -6,7 +6,7 @@
 //   const [guess, setGuess] = useState("");
 
 //   const submitGuess = async () => {
-//     await fetch("http://localhost:5050/submit-guess", {
+//     await fetch("http://192.168.11.161:5050/submit-guess", {
 //       method: "POST",
 //       headers: { "Content-Type": "application/json" },
 //       body: JSON.stringify({ player: playerName, guess }),
@@ -39,7 +39,7 @@ export default function GuessInput({ imageIndex, correctWord, onGuess }) {
   const [result, setResult] = useState(null);
 
   const submitGuess = async () => {
-    await fetch("http://localhost:5050/submit-guess", {
+    await fetch("http://192.168.11.161:5050/submit-guess", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ player: playerName, guess, image_index: imageIndex }),

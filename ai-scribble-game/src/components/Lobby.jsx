@@ -13,7 +13,7 @@ export default function Lobby() {
     if (!name.trim()) return;
 
     try {
-      const response = await fetch("http://localhost:5050/join", {
+      const response = await fetch("http://192.168.11.161:5050/join", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -39,7 +39,7 @@ export default function Lobby() {
 
 const handleStart = async () => {
   try {
-    await fetch("http://localhost:5050/start-game", {
+    await fetch("http://192.168.11.161:5050/start-game", {
       method: "POST"
     });
   } catch (err) {
@@ -50,7 +50,7 @@ const handleStart = async () => {
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        const res = await fetch("http://localhost:5050/players");
+        const res = await fetch("http://192.168.11.161:5050/players");
         const data = await res.json();
         setPlayers(data.players);
       } catch (err) {

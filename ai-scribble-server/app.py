@@ -12,9 +12,11 @@ CORS(app, supports_credentials=True)
 client = OpenAI()
 
 guesses = {}  # player_name -> guess
+
 current_round = {
     "index": 0,
-    "started": False
+    "started": False,
+    "reveal": False  # <- new
 }
 
 game_state = {"started": False}
@@ -132,6 +134,17 @@ def submit_drawing():
 
 guesses_by_image = []  # list of { image_index: int, guesses: { player: guess } }
 
+
+@app.route("/reset", methods=["POST"])
+def reset_game():
+    global players, generated_images, guesses_by_image, current_round, game_state
+    players = []
+    generated_images = []
+    guesses_by_image = []
+    current_round = {"index": 0, "started": False, "reveal": False}
+    game_state = {"started": False}
+    return jsonify({"status": "reset"})
+
 @app.route("/submit-guess", methods=["POST"])
 def submit_guess():
     data = request.get_json()
@@ -146,23 +159,12 @@ def submit_guess():
     guesses_by_image[image_index]["guesses"][player] = guess
     return jsonify({"status": "ok"})
 
-# @app.route("/submit-guess", methods=["POST"])
-# def submit_guess():
-#     data = request.get_json()
-#     player = data.get("player")
-#     guess = data.get("guess")
-
-#     if player and guess:
-#         guesses[player] = guess
-#         return jsonify({"status": "ok"})
-#     return jsonify({"status": "error"}), 400
-
 @app.route("/next-image", methods=["GET"])
 def next_image():
     if current_round["index"] < len(generated_images):
         img = generated_images[current_round["index"]]
         return jsonify(img)
-    return jsonify({"done": True})
+    return jsonify({"done": not current_round["reveal"]})
 
 @app.route("/guesses/<int:index>", methods=["GET"])
 def get_guesses_for_image(index):
@@ -172,8 +174,13 @@ def get_guesses_for_image(index):
 
 @app.route("/advance-round", methods=["POST"])
 def advance_round():
+    current_round["reveal"] = True
+    return jsonify({"status": "reveal"})
+
+@app.route("/next-round", methods=["POST"])
+def next_round():
     current_round["index"] += 1
-    guesses.clear()
+    current_round["reveal"] = False
     if current_round["index"] >= len(generated_images):
         current_round["started"] = False
     return jsonify({"status": "advanced"})
@@ -181,6 +188,16 @@ def advance_round():
 @app.route("/guesses", methods=["GET"])
 def get_guesses():
     return jsonify(guesses)
+
+@app.route("/all-images-ready", methods=["GET"])
+def all_images_ready():
+    return jsonify({
+        "ready": len(generated_images) == len(players)
+    })
+
+@app.route("/current-round", methods=["GET"])
+def get_current_round():
+    return jsonify({"index": current_round["index"]})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5050, debug=True)
